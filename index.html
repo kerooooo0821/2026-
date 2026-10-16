@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#13171e">
+  <meta name="description" content="刘颖的游戏视觉设计作品集，展示买量设计、广告图与商店视觉作品。">
+  <title>刘颖 — 游戏视觉设计作品集</title>
+  <link rel="icon" href="assets/works/project-01-max/icon.webp" type="image/webp">
+  <link rel="stylesheet" href="css/style.css?v=20261016-3">
+  <script src="data/works.js?v=20261016-5" defer></script>
+  <script src="js/gradient-waves.js" defer></script>
+  <script src="js/main.js?v=20261016-4" defer></script>
+  <script src="js/page-scroll.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" id="skip-link" href="#main">跳转到内容</a>
+  <header class="site-header" id="site-header">
+    <a class="wordmark" href="#top" aria-label="LIU，返回首页">LIU<span class="wordmark-dot">.</span></a>
+    <nav class="site-nav" aria-label="主导航">
+      <a href="#about">关于</a>
+      <a href="#works">作品</a>
+    </nav>
+    <span class="header-note">VISUAL DESIGN PORTFOLIO</span>
+  </header>
+
+  <main id="main">
+    <div id="home-view">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <img class="hero-bg" src="assets/hero/hero-bg.webp" alt="" loading="eager" fetchpriority="high" aria-hidden="true">
+        <canvas class="hero-waves" id="hero-waves" aria-hidden="true"></canvas>
+        <div class="hero-inner section-shell">
+          <h1 class="hero-title hero-reveal" id="hero-title">作品集</h1>
+        </div>
+        <div class="hero-bottom section-shell">
+          <p class="hero-byline hero-reveal"><span class="hero-zh">刘颖</span><span class="hero-en" lang="en">/GAME VISUAL DESIGNER</span></p>
+          <a class="hero-scroll hero-reveal" href="#about" aria-label="向下滚动，查看个人介绍"><span class="hero-scroll-arrow" aria-hidden="true">↓</span></a>
+          <p class="hero-years hero-reveal">2021-2026</p>
+        </div>
+      </section>
+
+      <section class="about section-shell" id="about" aria-labelledby="about-title">
+        <h2 class="visually-hidden" id="about-title">关于刘颖</h2>
+        <div class="about-top">
+          <figure class="about-portrait">
+            <img src="assets/about/avatar.jpg" alt="刘颖的头像" loading="lazy">
+          </figure>
+          <div class="about-basics">
+            <h3>基本信息</h3>
+            <dl class="about-facts">
+              <div><dt>姓名：</dt><dd>刘颖</dd></div>
+              <div><dt>现居地：</dt><dd>深圳</dd></div>
+              <div><dt>电话：</dt><dd><a href="tel:15361088224">15361088224</a></dd></div>
+              <div><dt>邮箱：</dt><dd><a href="mailto:Liuying7298@163.com">Liuying7298@163.com</a></dd></div>
+            </dl>
+          </div>
+          <div class="about-education">
+            <h3>教育背景</h3>
+            <p><span>2017—2021</span><span>安徽建筑大学</span><span>本科</span></p>
+          </div>
+        </div>
+        <div class="about-divider" aria-hidden="true"></div>
+        <div class="about-bottom">
+          <div class="about-experience">
+            <h3>工作经历</h3>
+            <p class="about-company">深圳乐易网络有限公司 <span>平面设计师（三维）</span></p>
+            <ul>
+              <li>买量素材独立制作，平台主要为 Unity 3D、COCOS、AI。</li>
+              <li>针对部门素材分散、查找困难的痛点，主导搭建素材标签化管理软件，建立部门共享灵感库。</li>
+              <li>制作规范与流程标准化，制定《场景质量基础标准框架》并完善 COCOS 引擎 SOP。</li>
+              <li>年度投放数据个人排名依次为第 6 名、第 8 名、第 1 名，数据稳居前 10%。</li>
+            </ul>
+          </div>
+          <div class="about-skills">
+            <h3>专业技能</h3>
+            <dl>
+              <div><dt>基础平面</dt><dd>Photoshop、Illustrator</dd></div>
+              <div><dt>游戏引擎</dt><dd>Unity 3D、COCOS</dd></div>
+              <div><dt>AI 工具</dt><dd>Midjourney、Gemini、即梦</dd></div>
+              <div><dt>3D 软件</dt><dd>C4D、Blender</dd></div>
+              <div><dt>剪辑软件</dt><dd>Premiere Pro、剪映</dd></div>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section class="works section-shell" id="works" aria-label="项目合集">
+        <div class="works-grid" id="works-grid"></div>
+      </section>
+    </div>
+
+    <div class="detail-page" id="detail-page" aria-hidden="true" inert>
+      <div id="detail-view"></div>
+    </div>
+    <div class="detail-bottom-fade" id="detail-bottom-fade" aria-hidden="true"></div>
+    <nav class="detail-bottom-nav" id="detail-bottom-nav" aria-label="快速定位项目作品" hidden inert></nav>
+  </main>
+
+  <footer class="site-footer section-shell" id="site-footer">
+    <span>LIU<span class="wordmark-dot">.</span></span>
+    <span>GAME VISUAL DESIGN</span>
+    <a href="#top">返回顶部 ↑</a>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="查看图片">
+    <button class="lightbox-close" type="button" aria-label="关闭图片">关闭 ×</button>
+    <img id="lightbox-image" alt="" loading="lazy">
+    <p id="lightbox-caption"></p>
+  </dialog>
+</body>
+</html>
