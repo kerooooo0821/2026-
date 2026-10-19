@@ -16,6 +16,11 @@
   const lightboxImage = document.getElementById('lightbox-image');
   const lightboxCaption = document.getElementById('lightbox-caption');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const prefetchQueue = [];
+  const queuedImages = new Set();
+  const loadingImages = new Set();
+  let prefetchActive = 0;
+  let worksPrefetchSetup = false;
   let homeScrollY = 0;
   let currentWorkId = null;
   let routeVersion = 0;
@@ -51,6 +56,70 @@
     if (!entry?.sources?.length) return ' decoding="async"';
     const srcset = entry.sources.map((candidate) => `${safe(candidate.src)} ${candidate.width}w`).join(', ');
     return ` width="${entry.width}" height="${entry.height}" srcset="${srcset}" sizes="${sizes}" decoding="async"`;
+  }
+
+  function originalImageAttrs(source) {
+    const entry = imageVariants[source];
+    return `${entry ? ` width="${entry.width}" height="${entry.height}"` : ''} decoding="async"`;
+  }
+
+  function detailImageSources(work) {
+    const sources = [];
+    const collect = (item) => {
+      if (Array.isArray(item.items)) item.items.forEach(collect);
+      else if (item.type === 'image' && item.src) sources.push(item.src);
+    };
+    (work.sections || []).forEach((section) => section.items.forEach(collect));
+    return sources;
+  }
+
+  function pumpImagePrefetch() {
+    if (typeof window.Image !== 'function') return;
+    while (prefetchActive < 2 && prefetchQueue.length) {
+      const source = prefetchQueue.shift();
+      const image = new window.Image();
+      prefetchActive += 1;
+      loadingImages.add(image);
+      image.fetchPriority = 'low';
+      image.decoding = 'async';
+      image.onload = image.onerror = () => {
+        image.onload = image.onerror = null;
+        loadingImages.delete(image);
+        prefetchActive -= 1;
+        pumpImagePrefetch();
+      };
+      image.src = source;
+    }
+  }
+
+  function prefetchWorkImages(work, firstOnly = false) {
+    const sources = detailImageSources(work);
+    const candidates = firstOnly ? sources.slice(0, 1) : sources;
+    const fresh = candidates.filter((source) => !queuedImages.has(source));
+    fresh.forEach((source) => queuedImages.add(source));
+    if (firstOnly) prefetchQueue.push(...fresh);
+    else prefetchQueue.unshift(...fresh);
+    pumpImagePrefetch();
+  }
+
+  function setupWorksPrefetch() {
+    if (worksPrefetchSetup || document.body.classList.contains('detail-open')) return;
+    worksPrefetchSetup = true;
+    const warmFirstImages = () => {
+      if (window.navigator?.connection?.saveData) return;
+      works.forEach((work) => prefetchWorkImages(work, true));
+    };
+    if (!window.IntersectionObserver) {
+      setTimeout(warmFirstImages, 700);
+      return;
+    }
+    const observer = new window.IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      observer.disconnect();
+      if (window.requestIdleCallback) window.requestIdleCallback(warmFirstImages, { timeout: 1600 });
+      else setTimeout(warmFirstImages, 400);
+    }, { rootMargin: '400px 0px' });
+    observer.observe(document.getElementById('works'));
   }
 
   function playbackPoster(source) {
@@ -105,7 +174,7 @@
         ? tags.map((tag) => `<span>${safe(tag)}</span>`).join('')
         : '<span>素材筹备中</span>';
 
-      return `<a class="work-card" href="#work/${encodeURIComponent(work.id)}" aria-label="查看 ${safe(work.title)} 项目详情">
+      return `<a class="work-card" href="#work/${encodeURIComponent(work.id)}" data-work-id="${safe(work.id)}" aria-label="查看 ${safe(work.title)} 项目详情">
         <div class="work-image${isPlaceholder ? ' work-placeholder' : ''}">
           ${image}
           <div class="work-overlay" aria-hidden="true">
@@ -167,7 +236,7 @@
     const badge = item.role === 'team' ? '<span class="media-credit-badge is-team">团队制作</span>' : '';
     return `<figure class="media-item detail-reveal">
       <button class="media-image-button" type="button" data-image-src="${safe(item.src)}" data-caption="${caption}" aria-label="放大查看 ${caption || '项目图片'}${credit ? `，${credit}` : ''}">
-        <img src="${safe(item.src)}" alt="${caption || '项目图片'}" loading="lazy"${responsiveAttrs(item.src, imageSizes)}>
+        <img src="${safe(item.src)}" alt="${caption || '项目图片'}" loading="lazy"${originalImageAttrs(item.src)}>
       </button>
       ${badge}
       ${item.showCaption && caption ? `<figcaption class="video-caption image-caption">${caption}</figcaption>` : ''}
@@ -512,6 +581,7 @@
       detailView.innerHTML = '';
       document.body.classList.remove('detail-open');
       setHomeInert(false);
+      setupWorksPrefetch();
       if (wasDetail && (hash === 'works' || hash === '')) {
         window.scrollTo(0, detailOpener ? homeScrollY : document.getElementById('works').offsetTop);
       } else if (hash) {
@@ -528,8 +598,22 @@
 
   grid.addEventListener('click', (event) => {
     const card = event.target.closest('.work-card');
-    if (card) { homeScrollY = window.scrollY; detailOpener = card; }
+    if (card) {
+      const work = works.find((entry) => entry.id === card.dataset?.workId);
+      if (work) prefetchWorkImages(work);
+      homeScrollY = window.scrollY;
+      detailOpener = card;
+    }
   });
+
+  const prefetchCard = (event) => {
+    const card = event.target.closest('.work-card');
+    const work = works.find((entry) => entry.id === card?.dataset?.workId);
+    if (work) prefetchWorkImages(work);
+  };
+  grid.addEventListener('pointerover', prefetchCard);
+  grid.addEventListener('focusin', prefetchCard);
+  grid.addEventListener('touchstart', prefetchCard, { passive: true });
 
   detailView.addEventListener('click', (event) => {
     if (event.target.closest('.detail-close')) { location.hash = '#works'; return; }
@@ -678,4 +762,5 @@
   renderCards();
   window.addEventListener('hashchange', route);
   route();
+  setupWorksPrefetch();
 })();
