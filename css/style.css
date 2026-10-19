@@ -1,27 +1,27 @@
 @font-face {
   font-family: "北半川像素潮玩体";
-  src: url("../assets/fonts/北半川像素潮玩体.ttf") format("truetype");
+  src: url("../assets/fonts/北半川像素潮玩体-subset.woff2") format("woff2"), url("../assets/fonts/北半川像素潮玩体.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "汉仪中黑简";
-  src: url("../assets/fonts/汉仪中黑简.ttf") format("truetype");
+  src: url("../assets/fonts/汉仪中黑简-subset.woff2") format("woff2"), url("../assets/fonts/汉仪中黑简.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "Consolas";
-  src: url("../assets/fonts/Consolas.ttf") format("truetype");
+  src: url("../assets/fonts/Consolas-subset.woff2") format("woff2"), url("../assets/fonts/Consolas.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "The Slug and Lion";
-  src: url("../assets/fonts/The-Slug-and-Lion-2.otf") format("opentype");
+  src: url("../assets/fonts/The-Slug-and-Lion-subset.woff2") format("woff2"), url("../assets/fonts/The-Slug-and-Lion-2.otf") format("opentype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -29,7 +29,7 @@
 }
 @font-face {
   font-family: "汉仪粗黑简";
-  src: url("../assets/fonts/HanYiCuHeiJian-1.ttf") format("truetype");
+  src: url("../assets/fonts/HanYiCuHeiJian-subset.woff2") format("woff2"), url("../assets/fonts/HanYiCuHeiJian-1.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;

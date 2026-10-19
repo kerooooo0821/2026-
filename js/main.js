@@ -2,6 +2,7 @@
   'use strict';
 
   const works = Array.isArray(window.WORKS) ? window.WORKS : [];
+  const imageVariants = window.IMAGE_VARIANTS || {};
   const homeView = document.getElementById('home-view');
   const skipLink = document.getElementById('skip-link');
   const siteHeader = document.getElementById('site-header');
@@ -45,6 +46,18 @@
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[char]);
 
+  function responsiveAttrs(source, sizes) {
+    const entry = imageVariants[source];
+    if (!entry?.sources?.length) return ' decoding="async"';
+    const srcset = entry.sources.map((candidate) => `${safe(candidate.src)} ${candidate.width}w`).join(', ');
+    return ` width="${entry.width}" height="${entry.height}" srcset="${srcset}" sizes="${sizes}" decoding="async"`;
+  }
+
+  function playbackPoster(source) {
+    const sources = imageVariants[source]?.sources;
+    return sources?.length > 1 ? sources[sources.length - 2].src : source;
+  }
+
   function flipCover(toContent) {
     if (!activeCover || coverFlipping) return;
     coverFlipping = true;
@@ -84,7 +97,7 @@
       const tags = Array.isArray(work.tags) ? work.tags : [];
       const image = isPlaceholder
         ? `<span class="work-placeholder-title">${safe(work.title)}</span>`
-        : `<img class="work-thumb" src="${safe(work.thumb)}" alt="${safe(work.title)} 项目缩略图" loading="lazy">`;
+        : `<img class="work-thumb" src="${safe(work.thumb)}" alt="${safe(work.title)} 项目缩略图" loading="lazy"${responsiveAttrs(work.thumb, '(max-width: 640px) 94vw, (max-width: 900px) 46vw, 32vw')}>`;
       const icon = work.icon
         ? `<img class="work-overlay-icon" src="${safe(work.icon)}" alt="" loading="lazy">`
         : '';
@@ -108,16 +121,16 @@
     }).join('');
   }
 
-  function renderMediaItem(item) {
+  function renderMediaItem(item, imageSizes = '(max-width: 640px) 92vw, 76vw') {
     if (item.type === 'image-set') {
       return `<div class="media-image-set" role="group" aria-label="${safe(item.id)}">
-        <div class="media-image-set-grid${item.items.length === 1 ? ' is-single' : ''}">${item.items.map(renderMediaItem).join('')}</div>
+        <div class="media-image-set-grid${item.items.length === 1 ? ' is-single' : ''}">${item.items.map((image) => renderMediaItem(image, '(max-width: 640px) 92vw, 40vw')).join('')}</div>
       </div>`;
     }
     if (item.type === 'gameplay-set') {
       return `<div class="gameplay-set" role="group" aria-label="玩法 ${safe(item.id)}">
         <p class="gameplay-set-caption detail-reveal">${safe(item.caption)}</p>
-        <div class="gameplay-set-grid${item.items.length === 1 ? ' is-single' : ''}">${item.items.map(renderMediaItem).join('')}</div>
+        <div class="gameplay-set-grid${item.items.length === 1 ? ' is-single' : ''}">${item.items.map((image) => renderMediaItem(image, '(max-width: 640px) 92vw, 40vw')).join('')}</div>
       </div>`;
     }
     if (item.type === 'set') {
@@ -125,17 +138,17 @@
       const team = item.items.filter((image) => image.role === 'team');
       const other = item.items.filter((image) => image.role !== 'solo' && image.role !== 'team');
       return `<div class="media-set" role="group" aria-label="商店图 ${safe(item.id)} 完整套装">
-        <div class="media-set-solo">${solo.map(renderMediaItem).join('')}</div>
-        <div class="media-set-team">${team.map(renderMediaItem).join('')}</div>
-        ${other.length ? `<div class="media-set-other">${other.map(renderMediaItem).join('')}</div>` : ''}
+        <div class="media-set-solo">${solo.map((image) => renderMediaItem(image)).join('')}</div>
+        <div class="media-set-team">${team.map((image) => renderMediaItem(image, '(max-width: 640px) 92vw, 28vw')).join('')}</div>
+        ${other.length ? `<div class="media-set-other">${other.map((image) => renderMediaItem(image)).join('')}</div>` : ''}
       </div>`;
     }
     if (item.type === 'extras') {
-      return `<div class="media-extras" role="group" aria-label="其他商店图">${item.items.map(renderMediaItem).join('')}</div>`;
+      return `<div class="media-extras" role="group" aria-label="其他商店图">${item.items.map((image) => renderMediaItem(image)).join('')}</div>`;
     }
     const caption = safe(item.caption || '');
     if (item.type === 'video') {
-      const poster = item.poster ? `<img src="${safe(item.poster)}" alt="${caption ? `${caption} 视频封面` : '视频封面'}" loading="lazy">` : '<span class="video-poster-missing">播放视频</span>';
+      const poster = item.poster ? `<img src="${safe(item.poster)}" alt="${caption ? `${caption} 视频封面` : '视频封面'}" loading="lazy"${responsiveAttrs(item.poster, '(max-width: 640px) 92vw, 70vw')}>` : '<span class="video-poster-missing">播放视频</span>';
       const loadingPoster = item.poster ? '<img class="video-loading-poster" alt="" loading="lazy" aria-hidden="true">' : '<span class="video-loading-poster" aria-hidden="true">视频加载中</span>';
       return `<figure class="media-item detail-reveal">
         <div class="video-stage">
@@ -144,7 +157,7 @@
             ${loadingPoster}
             <span class="video-loading-indicator" aria-hidden="true"></span>
             <button class="video-collapse" type="button" data-video-close aria-label="收起视频">收起 ×</button>
-            <video controls playsinline preload="none"${item.poster ? ` poster="${safe(item.poster)}"` : ''} aria-label="${caption || '项目视频'}"></video>
+            <video controls playsinline preload="none"${item.poster ? ` poster="${safe(playbackPoster(item.poster))}"` : ''} aria-label="${caption || '项目视频'}"></video>
           </div>
         </div>
         ${caption ? `<figcaption class="video-caption">${caption}</figcaption>` : ''}
@@ -154,7 +167,7 @@
     const badge = item.role === 'team' ? '<span class="media-credit-badge is-team">团队制作</span>' : '';
     return `<figure class="media-item detail-reveal">
       <button class="media-image-button" type="button" data-image-src="${safe(item.src)}" data-caption="${caption}" aria-label="放大查看 ${caption || '项目图片'}${credit ? `，${credit}` : ''}">
-        <img src="${safe(item.src)}" alt="${caption || '项目图片'}" loading="lazy">
+        <img src="${safe(item.src)}" alt="${caption || '项目图片'}" loading="lazy"${responsiveAttrs(item.src, imageSizes)}>
       </button>
       ${badge}
       ${item.showCaption && caption ? `<figcaption class="video-caption image-caption">${caption}</figcaption>` : ''}
