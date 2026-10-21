@@ -156,11 +156,25 @@ const projectData = [
     coverCopy: { title: 'Kingdom Fall: Zombie Defense', subtitle: '王国陷落：僵尸防御', intro: '末日丧尸题材的模拟策略游戏', keywords: '中世纪/末日/丧尸/Thronefall式塔防/高空避难所/卡通/SLG' },
     media: {
       videos: [
-        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/01.mp4', poster: 'assets/works/project-07-p11/videos/01-poster.webp', caption: 'Banished-高空建造' },
-        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/02.mp4', poster: 'assets/works/project-07-p11/videos/02-poster.webp', caption: 'Banished-建造' },
+        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/01.mp4', poster: 'assets/works/project-07-p11/videos/01-poster.webp', caption: 'Banished-高空建造', processImages: [
+          { src: '01-process/01-wireframe.webp', caption: '白盒部分：确定场景布局与动线' },
+          { src: '01-process/02-wireframe.webp', caption: '细化白盒部分：确定场景布局与动线' },
+          { src: '01-process/03.webp', caption: '场景建筑样式参考' },
+          { src: '01-process/04.webp', caption: '场景建筑样式参考' }
+        ] },
+        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/02.mp4', poster: 'assets/works/project-07-p11/videos/02-poster.webp', caption: 'Banished-建造', processImages: [
+          { src: '02-process/01-params.webp', caption: '参数调整：光照效果' },
+          { src: '02-process/02-params.webp', caption: '参数调整：雾体效果' },
+          { src: '02-process/03-params.webp', caption: '参数调整：阴影细节' }
+        ] },
         { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/03.mp4', poster: 'assets/works/project-07-p11/videos/03-poster.webp', caption: 'SLG-上帝之手' },
-        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/04.mp4', poster: 'assets/works/project-07-p11/videos/04-poster.webp', caption: '4X-建造' },
-        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/05.mp4', poster: 'assets/works/project-07-p11/videos/05-poster.webp', caption: '搜打撤-丧尸' }
+        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/04.mp4', poster: 'assets/works/project-07-p11/videos/04-poster.webp', caption: '4X-建造', processImages: [
+          { src: '04-process/01-wireframe.webp', caption: '白盒部分：确定场景布局与动线' }
+        ] },
+        { src: 'https://gamevideoly-1507540824.cos.ap-guangzhou.myqcloud.com/works/project-07-p11/videos/05.mp4', poster: 'assets/works/project-07-p11/videos/05-poster.webp', caption: '搜打撤-丧尸', processImages: [
+          { src: '05-process/01.webp', caption: '方案部分：确定故事情节及情绪线' },
+          { src: '05-process/02-params.webp', caption: '参数调整：光照脚本效果' }
+        ] }
       ]
     }
   },
@@ -209,6 +223,10 @@ window.WORKS = projectData.map((project) => {
             src: entry.src,
             poster: entry.poster || '',
             caption: typeof entry.caption === 'string' ? entry.caption.trim() : '',
+            processImages: Array.isArray(entry.processImages) ? entry.processImages.map((image) => ({
+              src: `${directory}/videos/${image.src}`,
+              caption: typeof image.caption === 'string' ? image.caption.trim() : ''
+            })) : [],
             type: 'video'
           };
         }

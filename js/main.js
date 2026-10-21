@@ -219,6 +219,18 @@
     if (item.type === 'video') {
       const poster = item.poster ? `<img src="${safe(item.poster)}" alt="${caption ? `${caption} 视频封面` : '视频封面'}" loading="lazy"${responsiveAttrs(item.poster, '(max-width: 640px) 92vw, 70vw')}>` : '<span class="video-poster-missing">播放视频</span>';
       const loadingPoster = item.poster ? '<img class="video-loading-poster" alt="" loading="lazy" aria-hidden="true">' : '<span class="video-loading-poster" aria-hidden="true">视频加载中</span>';
+      const processImages = Array.isArray(item.processImages) ? item.processImages : [];
+      const processGallery = processImages.length ? `<div class="video-process" hidden aria-label="设计过程图">
+        <div class="video-process-grid">${processImages.map((image) => {
+          const imageCaption = safe(image.caption || '');
+          return `<figure class="video-process-image">
+            <button class="process-image-button" type="button" data-image-src="${safe(image.src)}" data-caption="${imageCaption}" aria-label="放大查看 ${imageCaption || '设计过程图'}">
+              <img src="${safe(image.src)}" alt="${imageCaption || '设计过程图'}" loading="lazy" decoding="async">
+            </button>
+            ${imageCaption ? `<figcaption class="video-caption image-caption">${imageCaption}</figcaption>` : ''}
+          </figure>`;
+        }).join('')}</div>
+      </div>` : '';
       return `<figure class="media-item detail-reveal">
         <div class="video-stage">
           <button class="video-poster" type="button" data-video-src="${safe(item.src)}" aria-label="${caption ? `播放 ${caption}` : '播放视频'}">${poster}</button>
@@ -230,6 +242,7 @@
           </div>
         </div>
         ${caption ? `<figcaption class="video-caption">${caption}</figcaption>` : ''}
+        ${processGallery}
       </figure>`;
     }
     const credit = item.role === 'solo' ? '独立完成' : item.role === 'team' ? '团队制作' : '';
@@ -315,7 +328,7 @@
     cancelVideoFade();
     activeVideoObserver?.disconnect();
     activeVideoObserver = null;
-    const { button, player, video } = activeVideo;
+    const { button, player, video, processGallery } = activeVideo;
     video.onloadedmetadata = video.onwaiting = video.onplaying = video.onpause = video.onended = video.onerror = null;
     video.pause();
     video.removeAttribute('src');
@@ -326,6 +339,10 @@
     player.style.height = '';
     player.style.aspectRatio = '';
     button.hidden = false;
+    if (processGallery) {
+      processGallery.hidden = true;
+      processGallery.classList.remove('is-visible');
+    }
     activeVideo = null;
     if (restoreFocus) button.focus();
   }
@@ -333,6 +350,7 @@
   function playVideoInCard(button) {
     collapseActiveVideo();
     const stage = button.closest('.video-stage');
+    const processGallery = stage.closest?.('.media-item')?.querySelector('.video-process') || null;
     const player = stage.querySelector('.video-player');
     const video = player.querySelector('video');
     const poster = button.querySelector('img');
@@ -352,7 +370,11 @@
     player.classList.add('is-loading');
     button.hidden = true;
     player.hidden = false;
-    activeVideo = { button, stage, player, video };
+    activeVideo = { button, stage, player, video, processGallery };
+    if (processGallery) {
+      processGallery.hidden = false;
+      processGallery.classList.add('is-visible');
+    }
     let playRequested = true;
     video.onwaiting = () => { if (activeVideo?.video === video) player.classList.add('is-buffering'); };
     video.onplaying = () => player.classList.remove('is-buffering');
