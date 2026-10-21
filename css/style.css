@@ -210,6 +210,7 @@ a { color: inherit; }
 .about-facts a { text-decoration: none; text-underline-offset: 4px; }
 .about-facts a:hover { text-decoration: underline; }
 .about-education p { display: flex; justify-content: space-between; gap: 14px; margin: 0; white-space: nowrap; font-size: clamp(15px, 1.08vw, 19px); line-height: 1.65; }
+.about-education .about-role { display: block; margin-top: 16px; color: var(--muted); white-space: normal; }
 .about-divider { height: 1px; margin: 5px 0 88px calc(var(--about-avatar) + var(--about-gap)); background: var(--line); }
 .about-bottom { display: grid; grid-template-columns: minmax(0, 1fr) var(--about-side); column-gap: var(--about-gap); }
 .about-bottom h3 { margin-bottom: 48px; }
