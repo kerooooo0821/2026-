@@ -220,7 +220,7 @@
       const poster = item.poster ? `<img src="${safe(item.poster)}" alt="${caption ? `${caption} 视频封面` : '视频封面'}" loading="lazy"${responsiveAttrs(item.poster, '(max-width: 640px) 92vw, 70vw')}>` : '<span class="video-poster-missing">播放视频</span>';
       const loadingPoster = item.poster ? '<img class="video-loading-poster" alt="" loading="lazy" aria-hidden="true">' : '<span class="video-loading-poster" aria-hidden="true">视频加载中</span>';
       const processImages = Array.isArray(item.processImages) ? item.processImages : [];
-      const processGallery = processImages.length ? `<div class="video-process" hidden aria-label="设计过程图">
+      const processGallery = processImages.length ? `<div class="video-process" aria-label="设计过程图">
         <div class="video-process-grid">${processImages.map((image) => {
           const imageCaption = safe(image.caption || '');
           return `<figure class="video-process-image">
@@ -328,7 +328,7 @@
     cancelVideoFade();
     activeVideoObserver?.disconnect();
     activeVideoObserver = null;
-    const { button, player, video, processGallery } = activeVideo;
+    const { button, player, video } = activeVideo;
     video.onloadedmetadata = video.onwaiting = video.onplaying = video.onpause = video.onended = video.onerror = null;
     video.pause();
     video.removeAttribute('src');
@@ -339,10 +339,6 @@
     player.style.height = '';
     player.style.aspectRatio = '';
     button.hidden = false;
-    if (processGallery) {
-      processGallery.hidden = true;
-      processGallery.classList.remove('is-visible');
-    }
     activeVideo = null;
     if (restoreFocus) button.focus();
   }
@@ -350,7 +346,6 @@
   function playVideoInCard(button) {
     collapseActiveVideo();
     const stage = button.closest('.video-stage');
-    const processGallery = stage.closest?.('.media-item')?.querySelector('.video-process') || null;
     const player = stage.querySelector('.video-player');
     const video = player.querySelector('video');
     const poster = button.querySelector('img');
@@ -370,11 +365,7 @@
     player.classList.add('is-loading');
     button.hidden = true;
     player.hidden = false;
-    activeVideo = { button, stage, player, video, processGallery };
-    if (processGallery) {
-      processGallery.hidden = false;
-      processGallery.classList.add('is-visible');
-    }
+    activeVideo = { button, stage, player, video };
     let playRequested = true;
     video.onwaiting = () => { if (activeVideo?.video === video) player.classList.add('is-buffering'); };
     video.onplaying = () => player.classList.remove('is-buffering');

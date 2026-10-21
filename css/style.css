@@ -302,7 +302,7 @@ a { color: inherit; }
 .media-section + .media-section { margin-top: clamp(120px, 10vw, 160px); padding-top: clamp(48px, 5vw, 72px); border-top: 1px solid rgba(255, 255, 255, .08); }
 .detail-page .detail-reveal { opacity: 1; transform: translateY(0); transition: opacity .5s ease-out, transform .5s ease-out; transition-delay: var(--reveal-delay, 0ms); }
 .detail-page.has-reveal .detail-reveal:not(.is-visible) { opacity: 0; transform: translateY(20px); }
-.media-list { display: grid; gap: clamp(34px, 5vw, 70px); }
+.media-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(34px, 5vw, 70px); }
 .media-list--with-set { gap: 60px; }
 .media-list--gameplay { gap: clamp(64px, 6vw, 80px); }
 .media-list--image-sets { gap: clamp(64px, 6vw, 80px); }
@@ -323,7 +323,7 @@ a { color: inherit; }
 .media-extras { display: grid; grid-template-columns: 1fr; gap: clamp(12px, 1.6vw, 24px); }
 .media-set .media-item { overflow: hidden; border-radius: 9px; }
 .media-extras .media-item { overflow: hidden; border-radius: 9px; }
-.media-item { position: relative; margin: 0; }
+.media-item { position: relative; min-width: 0; margin: 0; }
 .media-credit-badge { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 7px 11px; border-radius: 5px; font-family: "汉仪中黑简", sans-serif; font-size: clamp(12px, .9vw, 15px); line-height: 1.15; letter-spacing: .02em; white-space: nowrap; pointer-events: none; }
 .media-credit-badge.is-team { color: #fff; background: rgba(24, 27, 33, .78); }
 .media-image-button, .video-poster { display: block; width: 100%; padding: 0; border: 0; background: #292b29; cursor: zoom-in; }
@@ -354,12 +354,11 @@ a { color: inherit; }
 @keyframes video-loading-spin { to { transform: rotate(360deg); } }
 .video-caption { margin: 8px 0 0; color: rgba(255, 255, 255, .5); font-family: "The Slug and Lion", "汉仪中黑简", sans-serif; font-size: 14px; font-weight: 400; line-height: 1.55; text-align: center; overflow-wrap: anywhere; }
 .video-process { width: 100%; margin-top: 28px; }
-.video-process.is-visible { animation: process-images-in .4s ease-out both; }
-.video-process-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
-.video-process-image { min-width: 0; margin: 0; }
-.process-image-button { display: flex; justify-content: center; align-items: center; width: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
-.process-image-button img { width: auto; max-width: 100%; height: auto; max-height: min(75dvh, calc(100dvh - 230px)); object-fit: contain; }
-@keyframes process-images-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.video-process-grid { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 16px; scroll-snap-type: x mandatory; scroll-behavior: smooth; scroll-padding-inline: 2px; overscroll-behavior-x: contain; scrollbar-width: none; }
+.video-process-grid::-webkit-scrollbar { display: none; }
+.video-process-image { flex: 0 0 auto; width: max-content; max-width: min(72vw, 640px); margin: 0; scroll-snap-align: start; }
+.process-image-button { display: flex; justify-content: center; align-items: center; width: 100%; padding: 10px; border: 0; border-radius: 8px; background: #1a1a1a; cursor: zoom-in; }
+.process-image-button img { height: 190px; width: auto; max-width: 100%; object-fit: contain; }
 .detail-end { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 140px; padding-top: 25px; border-top: 1px solid var(--line); }
 .detail-end span { color: var(--muted); font-size: 12px; letter-spacing: .1em; }
 
@@ -443,7 +442,8 @@ a { color: inherit; }
   .gameplay-set-grid { grid-template-columns: 1fr; }
   .media-image-set-grid { grid-template-columns: 1fr; }
   .video-poster img, .video-player video { max-height: 70dvh; }
-  .video-process-grid { grid-template-columns: 1fr; }
+  .video-process-image { max-width: calc(100vw - 48px); }
+  .process-image-button img { height: 140px; }
   .media-set-team, .media-extras { grid-template-columns: 1fr; }
   .media-credit-badge { top: 9px; left: 9px; }
   .detail-end { margin-top: 100px; }
@@ -452,6 +452,7 @@ a { color: inherit; }
   .site-footer > span:nth-child(2) { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .video-process-grid { scroll-behavior: auto; }
   .video-loading-indicator { animation: none !important; }
   html { scroll-behavior: auto; }
   .hero-bg { visibility: visible; opacity: 1; }
